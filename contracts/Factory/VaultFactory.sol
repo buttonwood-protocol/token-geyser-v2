@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity 0.7.6;
 
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {IFactory} from "./IFactory.sol";
@@ -8,10 +9,16 @@ import {IInstanceRegistry} from "./InstanceRegistry.sol";
 import {IUniversalVault} from "../UniversalVault.sol";
 import {ProxyFactory} from "./ProxyFactory.sol";
 
+interface ITokenURIHandler {
+    function tokenURI(uint256 tokenId, bool exists) external view returns (string memory);
+}
+
 /// @title Vault Factory
 /// @dev Security contact: dev-support@ampleforth.org
-contract VaultFactory is IFactory, IInstanceRegistry, ERC721 {
+contract VaultFactory is IFactory, IInstanceRegistry, ERC721, Ownable {
     address private immutable _template;
+
+    address private _tokenURIHandler;
 
     constructor(address template) ERC721("Universal Vault v1", "VAULT-v1") {
         require(template != address(0), "VaultFactory: invalid template");
@@ -86,5 +93,20 @@ contract VaultFactory is IFactory, IInstanceRegistry, ERC721 {
 
     function uint256ToAddress(uint256 tokenId) external pure returns (address vault) {
         return address(tokenId);
+    }
+
+    /* tokenURI functions */
+
+    function setTokenURIHandler(address tokenURIHandler) external onlyOwner {
+        _tokenURIHandler = tokenURIHandler;
+    }
+
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        address tokenURIHandler = _tokenURIHandler;
+        if (tokenURIHandler == address(0)) {
+            return super.tokenURI(tokenId);
+        } else {
+            return ITokenURIHandler(tokenURIHandler).tokenURI(tokenId, _exists(tokenId));
+        }
     }
 }
