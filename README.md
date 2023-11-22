@@ -79,6 +79,50 @@ yarn
 yarn test
 ```
 
+## Deploy
+
+Ensure that `/sdk` is symlinked to `/frontend/src/sdk`, as the scripts will crash otherwise.
+
+### 1. Ensure compiled latest version
+```
+yarn hardhat compile
+```
+
+### 2. Deploy factories
+
+This will update `/frontend/src/sdk/deployments/hardhat/factories-latest.json`, which is automatically used by subsequent scripts.
+```
+yarn hardhat deploy --network goerli
+```
+
+### 3. Verify factories
+```
+yarn hardhat verify-factories --network goerli
+```
+
+### 4. Create Geyser
+
+Example `floor` and `ceiling` configures a x3 multiplier gain for the given 3 month (`2592000` seconds) `time` value.
+```
+yarn hardhat create-geyser --network goerli --staking-token 0x43625A16F3696071AC433615Dc2821Bfd50641DB --reward-token 0xF19162950528A40a27d922f52413d26f71B25926 --floor 33 --ceiling 100 --time 2592000
+```
+
+### 5. Verify Geyser
+
+`0x6D65A76cbf88Ab1480EdA0278d323aB2e5a4D38A` is the implementation address logged during `create-geyser`.
+Can fail with "Reason: Already Verified" error, despite the contract only being partially verified.
+```
+yarn hardhat verify-geyser --network goerli 0x6D65A76cbf88Ab1480EdA0278d323aB2e5a4D38A
+```
+
+### 6. Fund Geyser
+
+The deployer account is expected to already possess sufficient reward token, but approval is handled by the script.
+The `geyser` address is the `proxy` address logged during `create-geyser`.
+```
+yarn hardhat fund-geyser --network goerli --geyser 0xdD1B3DD2eAB8376963F964B84f0D13DfC206178f --amount 1000000000000000000000 --duration 2592000
+``` 
+
 ## Contribute
 
 To report bugs within this package, create an issue in this repository.
