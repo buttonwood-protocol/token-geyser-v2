@@ -123,6 +123,14 @@ The `geyser` address is the `proxy` address logged during `create-geyser`.
 yarn hardhat fund-geyser --network goerli --geyser 0xdD1B3DD2eAB8376963F964B84f0D13DfC206178f --amount 1000000000000000000000 --duration 2592000
 ``` 
 
+### 7. Register valid Vault Factory
+
+At times you may need to register additional vault factories for a Geyser.
+```
+yarn hardhat register-vault-factory --network goerli --geyser 0xdD1B3DD2eAB8376963F964B84f0D13DfC206178f --vault-factory 0x5C7bCEA7a607A6FC065B148A4B7F8F18e83b1d27
+``` 
+
+
 ## Contribute
 
 To report bugs within this package, create an issue in this repository.

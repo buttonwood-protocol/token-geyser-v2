@@ -317,6 +317,16 @@ task('verify-geyser', 'verify and lock the Geyser template')
     // TODO: verify reward pool
   })
 
+task('register-vault-factory', 'register a vault factory instance with a Geyser')
+  .addParam('geyser', 'address of geyser')
+  .addParam('vaultFactory', 'address of vault factory')
+  .setAction(async ({ geyser, vaultFactory }, { ethers }) => {
+    const signer = (await ethers.getSigners())[0]
+    const geyserContract = await ethers.getContractAt('Geyser', geyser, signer)
+    const res = await geyserContract.connect(signer).registerVaultFactory(vaultFactory)
+    console.log(`Transaction hash: ${res.hash}`);
+  })
+
 task('lookup-proxy-admin', 'gets the proxy admin of the given contract')
   .addPositionalParam('address', 'the proxy contract address')
   .setAction(async ({ address }, { ethers, run, upgrades, network }) => {
