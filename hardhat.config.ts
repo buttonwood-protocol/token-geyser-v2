@@ -276,7 +276,7 @@ task('create-geyser', 'deploy an instance of Geyser')
 
 task('fund-geyser', 'fund an instance of Geyser')
   .addParam('geyser', 'address of geyser')
-  .addParam('amount', 'amount in floating point')
+  .addParam('amount', 'amount as raw integer')
   .addParam('duration', 'time in seconds the program lasts')
   .addOptionalParam('factoryVersion', 'the factory version', 'latest')
   .setAction(async ({ geyser, amount, duration }, { ethers }) => {
@@ -285,7 +285,7 @@ task('fund-geyser', 'fund an instance of Geyser')
     const data = await geyserContract.getGeyserData()
     const { rewardToken: rewardTokenAddress } = data
     const rewardToken = await ethers.getContractAt('MockAmpl', rewardTokenAddress, signer)
-    const amt = parseUnits(amount, 9)
+    const amt = parseUnits(amount, 0)
     await rewardToken.approve(geyser, amt)
     await geyserContract.connect(signer).fundGeyser(amt, duration)
   })
@@ -315,6 +315,16 @@ task('verify-geyser', 'verify and lock the Geyser template')
     })
 
     // TODO: verify reward pool
+  })
+
+task('register-vault-factory', 'register a vault factory instance with a Geyser')
+  .addParam('geyser', 'address of geyser')
+  .addParam('vaultFactory', 'address of vault factory')
+  .setAction(async ({ geyser, vaultFactory }, { ethers }) => {
+    const signer = (await ethers.getSigners())[0]
+    const geyserContract = await ethers.getContractAt('Geyser', geyser, signer)
+    const res = await geyserContract.connect(signer).registerVaultFactory(vaultFactory)
+    console.log(`Transaction hash: ${res.hash}`);
   })
 
 task('lookup-proxy-admin', 'gets the proxy admin of the given contract')
@@ -347,7 +357,7 @@ export default {
       chainId: 1337,
     },
     goerli: {
-      url: `https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_SECRET}`,
+      url: `https://goerli.infura.io/v3/${process.env.INFURA_SECRET}`,
       accounts: {
         mnemonic: process.env.PROD_MNEMONIC || Wallet.createRandom().mnemonic.phrase,
       },
