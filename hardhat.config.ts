@@ -327,6 +327,18 @@ task('register-vault-factory', 'register a vault factory instance with a Geyser'
     console.log(`Transaction hash: ${res.hash}`);
   })
 
+task('transfer-ownership', 'transfers a contract that implements Ownable to a new owner')
+  .addParam('contract', 'address of Ownable contract')
+  .addParam('owner', 'address of new owner')
+  .setAction(async ({ contract, owner }, { ethers }) => {
+    const ownable = await ethers.getContractAt(
+      '@openzeppelin/contracts/access/Ownable.sol:Ownable',
+      contract,
+    )
+    const res = await ownable.transferOwnership(owner)
+    console.log(`Transaction hash: ${res.hash}`);
+  })
+
 task('lookup-proxy-admin', 'gets the proxy admin of the given contract')
   .addPositionalParam('address', 'the proxy contract address')
   .setAction(async ({ address }, { ethers, run, upgrades, network }) => {
