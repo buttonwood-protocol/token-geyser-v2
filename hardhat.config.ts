@@ -152,27 +152,34 @@ task('verify-factories', 'verfires the deployed factories')
       await run('verify:verify', {
         address: PowerSwitchFactory.address,
       })
-    } catch (e) {}
+      console.log('Done verifying PowerSwitchFactory')
+    } catch (e) {
+      console.error('Failed to verify PowerSwitchFactory', e);
+    }
     try {
       await run('verify:verify', {
         address: RewardPoolFactory.address,
       })
+      console.log('Done verifying RewardPoolFactory')
     } catch (e) {}
     try {
       await run('verify:verify', {
         address: VaultTemplate.address,
       })
+      console.log('Done verifying VaultTemplate')
     } catch (e) {}
     try {
       await run('verify:verify', {
         address: VaultFactory.address,
         constructorArguments: [VaultTemplate.address],
       })
+      console.log('Done verifying VaultFactory')
     } catch (e) {}
     try {
       await run('verify:verify', {
         address: GeyserRegistry.address,
       })
+      console.log('Done verifying GeyserRegistry')
     } catch (e) {}
   })
 
@@ -215,6 +222,7 @@ task('create-geyser', 'deploy an instance of Geyser')
       const { PowerSwitchFactory, RewardPoolFactory, VaultFactory, GeyserRegistry } = JSON.parse(
         readFileSync(`${SDK_PATH}/deployments/${network.name}/factories-${factoryVersion}.json`).toString(),
       )
+      console.log({ PowerSwitchFactory, RewardPoolFactory, VaultFactory, GeyserRegistry });
 
       const factory = await ethers.getContractFactory('Geyser', signer)
       const geyser = await upgrades.deployProxy(factory, undefined, {
@@ -294,15 +302,15 @@ task('fund-geyser', 'fund an instance of Geyser')
 // ie) the implementation address of the deployed proxy through create-geyser
 // can automate after this issue is closed: https://github.com/OpenZeppelin/openzeppelin-upgrades/issues/290
 task('verify-geyser', 'verify and lock the Geyser template')
-  .addPositionalParam('geyserTemplate', 'the geyser template address')
-  .setAction(async ({ geyserTemplate }, { ethers, run, upgrades, network }) => {
+  .addPositionalParam('geysertemplate', 'the geyser template address')
+  .setAction(async ({ geysertemplate }, { ethers, run, upgrades, network }) => {
     await run('compile')
 
     const signer = (await ethers.getSigners())[0]
 
     console.log('Signer', signer.address)
 
-    const contract = await ethers.getContractAt('Geyser', geyserTemplate, signer)
+    const contract = await ethers.getContractAt('Geyser', geysertemplate, signer)
 
     console.log('Locking template')
 
@@ -333,12 +341,36 @@ task('lookup-proxy-admin', 'gets the proxy admin of the given contract')
     console.log('Proxy Admin:', await getAdminAddress(ethers.provider, address))
   })
 
+task('transfer-ownership', 'transfers a contract that implements Ownable to a new owner')
+  .addParam('contract', 'address of Ownable contract')
+  .addParam('owner', 'address of new owner')
+  .setAction(async ({ contract, owner }, { ethers }) => {
+    const ownable = await ethers.getContractAt(
+      '@openzeppelin/contracts/access/Ownable.sol:Ownable',
+      contract,
+    )
+    const res = await ownable.transferOwnership(owner)
+    console.log(`Transaction hash: ${res.hash}`);
+  })
+
 const getEtherscanAPIKey = () => {
   switch (process.env.HARDHAT_NETWORK) {
-    case 'mainnet' || 'kovan' || 'goerli':
-      return process.env.ETHERSCAN_API_KEY
-    case 'avalanche' || 'avalanche_fiji':
-      return process.env.SNOWTRACE_API_KEY
+    case 'mainnet' || 'kovan' || 'goerli': {
+      console.log('Using etherscan api key');
+      return process.env.ETHERSCAN_API_KEY;
+    }
+    case 'avalanche' || 'avalanche_fiji': {
+      console.log('Using snowtrace API key');
+      return process.env.SNOWTRACE_API_KEY;
+    }
+    case 'base-mainnet': {
+      console.log('Using base API key');
+      return process.env.BASE_API_KEY;
+    }
+    case 'base-goerli' || 'base-mainnet': {
+      console.log('Using base API key');
+      return process.env.BASE_API_KEY;
+    }
     default:
       return ''
   }
@@ -358,18 +390,58 @@ export default {
     },
     goerli: {
       url: `https://goerli.infura.io/v3/${process.env.INFURA_SECRET}`,
-      accounts: {
-        mnemonic: process.env.PROD_MNEMONIC || Wallet.createRandom().mnemonic.phrase,
-      },
+      accounts: process.env.DEV_PKEY
+        ? [process.env.DEV_PKEY]
+        : {
+          mnemonic: process.env.DEV_MNEMONIC || Wallet.createRandom().mnemonic.phrase,
+        },
       gasMultiplier: 1.03,
       allowUnlimitedContractSize: true,
     },
     mainnet: {
       url: `https://mainnet.infura.io/v3/${process.env.INFURA_SECRET}`,
-      accounts: {
-        mnemonic: process.env.PROD_MNEMONIC || Wallet.createRandom().mnemonic.phrase,
+      accounts: process.env.PROD_PKEY
+        ? [process.env.PROD_PKEY]
+        : {
+          mnemonic: process.env.PROD_MNEMONIC || Wallet.createRandom().mnemonic.phrase,
+        },
+      gasMultiplier: 1.03,
+    },
+    'base-mainnet': {
+      url: 'https://mainnet.base.org',
+      accounts: process.env.PROD_PKEY
+        ? [process.env.PROD_PKEY]
+        : {
+          mnemonic: process.env.PROD_MNEMONIC || Wallet.createRandom().mnemonic.phrase,
+        },
+      urls: {
+        apiURL: 'https://api.basescan.org/api',
+        browserURL: 'https://basescan.org',
       },
       gasMultiplier: 1.03,
+    },
+    'base-goerli': {
+      url: 'https://goerli.base.org',
+      accounts: process.env.DEV_PKEY
+        ? [process.env.DEV_PKEY]
+        : {
+          mnemonic: process.env.DEV_MNEMONIC || Wallet.createRandom().mnemonic.phrase,
+        },
+      urls: {
+        apiURL: 'https://api.basescan.org/api',
+        browserURL: 'https://basescan.org',
+      },
+      gasMultiplier: 1.03,
+    },
+    avalanche: {
+      url: 'https://api.avax.network/ext/bc/C/rpc',
+      accounts: process.env.PROD_PKEY
+        ? [process.env.PROD_PKEY]
+        : {
+          mnemonic: process.env.PROD_MNEMONIC  || Wallet.createRandom().mnemonic.phrase,
+        },
+      gasMultiplier: 1.03,
+      chainId: 43114,
     },
   },
   solidity: {
@@ -389,8 +461,25 @@ export default {
     ],
   },
   etherscan: {
-    // apiKey: getEtherscanAPIKey(),
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: getEtherscanAPIKey(),
+    customChains: [
+      {
+        network: 'base-mainnet',
+        chainId: 8453,
+        urls: {
+          apiURL: 'https://api.basescan.org/api',
+          browserURL: 'https://basescan.org',
+        },
+      },
+      {
+        network: 'base-goerli',
+        chainId: 84531,
+        urls: {
+          apiURL: 'https://api-goerli.basescan.org/api',
+          browserURL: 'https://goerli.basescan.org',
+        },
+      },
+    ],
   },
   mocha: {
     timeout: 100000,
