@@ -367,6 +367,10 @@ const getEtherscanAPIKey = () => {
       console.log('Using arbiscan API key');
       return process.env.ARBISCAN_API_KEY;
     }
+    case 'optimisticEthereum': {
+      console.log('Using optimistic-etherscan API key');
+      return process.env.OPTIMISTIC_ETHERSCAN_API_KEY;
+    }
     case 'base-mainnet': {
       console.log('Using base API key');
       return process.env.BASE_API_KEY;
@@ -456,6 +460,16 @@ export default {
         },
       gasMultiplier: 1.03,
       chainId: 42161,
+    },
+    optimisticEthereum: {
+      url: 'https://mainnet.optimism.io',
+      accounts: process.env.PROD_PKEY
+        ? [process.env.PROD_PKEY]
+        : {
+          mnemonic: process.env.PROD_MNEMONIC  || Wallet.createRandom().mnemonic.phrase,
+        },
+      gasMultiplier: 1.03,
+      chainId: 10,
     },
   },
   solidity: {
