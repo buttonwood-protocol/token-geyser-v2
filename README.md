@@ -130,6 +130,11 @@ At times you may need to register additional vault factories for a Geyser.
 yarn hardhat register-vault-factory --network goerli --geyser 0xdD1B3DD2eAB8376963F964B84f0D13DfC206178f --vault-factory 0x5C7bCEA7a607A6FC065B148A4B7F8F18e83b1d27
 ``` 
 
+### Transfer Ownership
+Ownable contracts can be transferred using the following script:
+```
+yarn hardhat transfer-ownership --network goerli --contract 0xdD1B3DD2eAB8376963F964B84f0D13DfC206178f --owner 0xEDBcCA5DfD692bab7656Ab2D4F499B43fA26480B
+```
 
 ## Contribute
 
