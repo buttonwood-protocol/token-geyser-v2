@@ -379,6 +379,10 @@ const getEtherscanAPIKey = () => {
       console.log('Using base API key');
       return process.env.BASE_API_KEY;
     }
+    case 'sei-devnet': {
+      console.log('Using sei-trace API key');
+      return process.env.SEITRACE_API_KEY;
+    }
     default:
       return ''
   }
@@ -470,6 +474,15 @@ export default {
         },
       gasMultiplier: 1.03,
       chainId: 10,
+    },
+    'sei-devnet': {
+      url: 'https://evm-rpc.arctic-1.seinetwork.io',
+      accounts: process.env.DEV_PKEY
+        ? [process.env.DEV_PKEY]
+        : {
+          mnemonic: process.env.DEV_MNEMONIC || Wallet.createRandom().mnemonic.phrase,
+        },
+      chainId: 713715,
     },
   },
   solidity: {
