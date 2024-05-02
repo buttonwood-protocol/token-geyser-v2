@@ -15,10 +15,10 @@ ethereum:
   proxyAdmin: 0xc70F5bc82ccb3de00400814ff8bD406C271db3c4
   geyserRegistry: 0xFc43803F203e3821213bE687120aD44C8a21A7e7
   geysers:
-    - poolRef: "UNI-ETH-AMPL-V2 (Beehive V7)"
+    - poolRef: 'UNI-ETH-AMPL-V2 (Beehive V7)'
       deployment: 0x5Ec6f02D0b657E4a56d6020Bc21F19f2Ca13EcA9
 
-    - poolRef: "Arrakis Vault V1 USDC/SPOT (RAKIS-35) (Fly V2)"
+    - poolRef: 'Arrakis Vault V1 USDC/SPOT (RAKIS-35) (Fly V2)'
       deployment: 0x392b58F407Efe1681a2EBB470600Bc2146D231a2
 
     # - poolRef: "UNI-ETH-AMPL-V2 (Beehive V6)"
@@ -49,7 +49,7 @@ ethereum:
     #   deployment: 0x88F12aE68315A89B885A2f1b0610fE2A9E1720B9
 
   externalVaultFactoriesWhitelisted:
-    - name: "Crucible"
+    - name: 'Crucible'
       template: 0x54e0395CFB4f39beF66DBCd5bD93Cca4E9273D56
 
 avalanche:
@@ -60,9 +60,9 @@ avalanche:
   proxyAdmin: 0x5396479b65ed39360Ba6C16f6D7c9fd357674534
   geyserRegistry: 0x60156bB86e9125639c624712a360FD3AbBb52421
   geysers:
-    - poolRef: "PNG-AVAX-ETH-AMPL (The great geysir V1)"
+    - poolRef: 'PNG-AVAX-ETH-AMPL (The great geysir V1)'
       deployment: 0x26645e8513B1D20aDb729E7114eDfA930D411720
-  externalVaultFactoriesWhitelisted: [ ]
+  externalVaultFactoriesWhitelisted: []
 ```
 
 ## Install
@@ -84,6 +84,7 @@ yarn test
 Ensure that `/sdk` is symlinked to `/frontend/src/sdk`, as the scripts will crash otherwise.
 
 ### 1. Ensure compiled latest version
+
 ```
 yarn hardhat compile
 ```
@@ -91,11 +92,13 @@ yarn hardhat compile
 ### 2. Deploy factories
 
 This will update `/frontend/src/sdk/deployments/hardhat/factories-latest.json`, which is automatically used by subsequent scripts.
+
 ```
 yarn hardhat deploy --network goerli
 ```
 
 ### 3. Verify factories
+
 ```
 yarn hardhat verify-factories --network goerli
 ```
@@ -103,6 +106,7 @@ yarn hardhat verify-factories --network goerli
 ### 4. Create Geyser
 
 Example `floor` and `ceiling` configures a x3 multiplier gain for the given 3 month (`2592000` seconds) `time` value.
+
 ```
 yarn hardhat create-geyser --network goerli --staking-token 0x43625A16F3696071AC433615Dc2821Bfd50641DB --reward-token 0xF19162950528A40a27d922f52413d26f71B25926 --floor 33 --ceiling 100 --time 2592000
 ```
@@ -111,6 +115,7 @@ yarn hardhat create-geyser --network goerli --staking-token 0x43625A16F3696071AC
 
 `0x6D65A76cbf88Ab1480EdA0278d323aB2e5a4D38A` is the implementation address logged during `create-geyser`.
 Can fail with "Reason: Already Verified" error, despite the contract only being partially verified.
+
 ```
 yarn hardhat verify-geyser --network goerli 0x6D65A76cbf88Ab1480EdA0278d323aB2e5a4D38A
 ```
@@ -119,17 +124,18 @@ yarn hardhat verify-geyser --network goerli 0x6D65A76cbf88Ab1480EdA0278d323aB2e5
 
 The deployer account is expected to already possess sufficient reward token, but approval is handled by the script.
 The `geyser` address is the `proxy` address logged during `create-geyser`.
+
 ```
 yarn hardhat fund-geyser --network goerli --geyser 0xdD1B3DD2eAB8376963F964B84f0D13DfC206178f --amount 1000000000000000000000 --duration 2592000
-``` 
+```
 
 ### 7. Register valid Vault Factory
 
 At times you may need to register additional vault factories for a Geyser.
+
 ```
 yarn hardhat register-vault-factory --network goerli --geyser 0xdD1B3DD2eAB8376963F964B84f0D13DfC206178f --vault-factory 0x5C7bCEA7a607A6FC065B148A4B7F8F18e83b1d27
-``` 
-
+```
 
 ## Contribute
 

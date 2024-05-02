@@ -29,13 +29,13 @@ since the event is emitted by the `PowerSwitch` contract.
 The following is the mapping between the data source name to its corresponding contract.
 Consequently, the address of the data source should match the address of the deployed contract.
 
-Data Source | Contract
-------------|-----------
-GeyserRegistry | GeyserRegistry
-VaultFactory | VaultFactory
-UniversalVaultNFT | VaultFactory
-CrucibleFactory | VaultFactory (of alchemist)
-CrucibleNFT | VaultFactory (of alchemist)
+| Data Source       | Contract                    |
+| ----------------- | --------------------------- |
+| GeyserRegistry    | GeyserRegistry              |
+| VaultFactory      | VaultFactory                |
+| UniversalVaultNFT | VaultFactory                |
+| CrucibleFactory   | VaultFactory (of alchemist) |
+| CrucibleNFT       | VaultFactory (of alchemist) |
 
 # Additional Info
 
