@@ -491,4 +491,4 @@ export const ARRAKIS_V1_ABI = [
   },
   { inputs: [], name: 'withdrawArrakisBalance', outputs: [], stateMutability: 'nonpayable', type: 'function' },
   { inputs: [], name: 'withdrawManagerBalance', outputs: [], stateMutability: 'nonpayable', type: 'function' },
-]
+];

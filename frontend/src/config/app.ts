@@ -1,4 +1,4 @@
-import { Network, RewardToken, StakingToken, ALCHEMY_PROJECT_ID } from '../constants'
+import { Network, RewardToken, StakingToken, ALCHEMY_PROJECT_ID } from '../constants';
 import {
   AppGeysersList,
   NetworkConfig,
@@ -6,7 +6,7 @@ import {
   ConnectionConfig,
   AdditionalTokenConfig,
   AppAdditionalTokensList,
-} from '../types'
+} from '../types';
 
 const networkConfig: NetworkConfig = {
   [Network.Mainnet]: {
@@ -54,7 +54,7 @@ const networkConfig: NetworkConfig = {
       decimals: 18,
     },
   },
-}
+};
 
 const geyserList: AppGeysersList = {
   [Network.Mainnet]: [
@@ -180,7 +180,7 @@ const geyserList: AppGeysersList = {
       isWrapped: false,
     },
   ],
-}
+};
 
 const additionalTokens: AppAdditionalTokensList = {
   [Network.Mainnet]: [
@@ -208,18 +208,18 @@ const additionalTokens: AppAdditionalTokensList = {
       enabled: true,
     },
   ],
-}
+};
 
-export const activeNetworks: Network[] = [Network.Mainnet, Network.Avalanche]
+export const activeNetworks: Network[] = [Network.Mainnet, Network.Avalanche];
 
 export function getConnectionConfig(networkId: number | null): ConnectionConfig {
-  return networkConfig[networkId as Network] || networkConfig[Network.Mainnet]
+  return networkConfig[networkId as Network] || networkConfig[Network.Mainnet];
 }
 
 export function getGeysersConfigList(networkId: number): GeyserConfig[] {
-  return geyserList[networkId as Network] || geyserList[Network.Mainnet]
+  return geyserList[networkId as Network] || geyserList[Network.Mainnet];
 }
 
 export function getAdditionalTokensList(networkId: number): AdditionalTokenConfig[] {
-  return additionalTokens[networkId as Network] || additionalTokens[Network.Mainnet]
+  return additionalTokens[networkId as Network] || additionalTokens[Network.Mainnet];
 }

@@ -1627,4 +1627,4 @@ export const BALANCER_BPOOL_V1_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-]
+];

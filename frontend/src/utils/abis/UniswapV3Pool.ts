@@ -379,4 +379,4 @@ export const UNISWAP_V3_POOL_ABI = [
     stateMutability: 'view',
     type: 'function',
   },
-]
+];

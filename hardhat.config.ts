@@ -490,8 +490,8 @@ export default {
       accounts: process.env.DEV_PKEY
         ? [process.env.DEV_PKEY]
         : {
-          mnemonic: process.env.DEV_MNEMONIC || Wallet.createRandom().mnemonic.phrase,
-        },
+            mnemonic: process.env.DEV_MNEMONIC || Wallet.createRandom().mnemonic.phrase,
+          },
       gasMultiplier: 1.03,
       allowUnlimitedContractSize: true,
     },
@@ -500,8 +500,8 @@ export default {
       accounts: process.env.PROD_PKEY
         ? [process.env.PROD_PKEY]
         : {
-          mnemonic: process.env.PROD_MNEMONIC || Wallet.createRandom().mnemonic.phrase,
-        },
+            mnemonic: process.env.PROD_MNEMONIC || Wallet.createRandom().mnemonic.phrase,
+          },
       gasMultiplier: 1.03,
       allowUnlimitedContractSize: true,
     },

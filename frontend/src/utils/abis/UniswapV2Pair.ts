@@ -650,4 +650,4 @@ export const UNISWAP_V2_PAIR_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-]
+];

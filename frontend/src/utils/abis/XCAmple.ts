@@ -664,4 +664,4 @@ export const XC_AMPLE_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-]
+];
