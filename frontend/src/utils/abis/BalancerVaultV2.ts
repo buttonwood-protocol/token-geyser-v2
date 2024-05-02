@@ -488,4 +488,4 @@ export const BALANCER_VAULT_V2_ABI = [
     type: 'function',
   },
   { stateMutability: 'payable', type: 'receive' },
-]
+];

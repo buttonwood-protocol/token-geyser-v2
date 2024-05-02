@@ -1258,4 +1258,4 @@ export const BALANCER_CRP_V1_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-]
+];

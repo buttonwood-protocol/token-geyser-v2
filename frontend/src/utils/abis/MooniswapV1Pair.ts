@@ -808,4 +808,4 @@ export const MOONISWAP_V1_PAIR_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-]
+];

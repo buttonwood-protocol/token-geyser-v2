@@ -334,4 +334,4 @@ export const AAVEV2_DEPOSIT_TOKEN = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-]
+];

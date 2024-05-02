@@ -1,11 +1,11 @@
-import { BigNumber } from 'ethers'
+import { BigNumber } from 'ethers';
 
 export type VaultData = {
-  totalStake: BigNumber
-  stakes: UserStake[]
-}
+  totalStake: BigNumber;
+  stakes: UserStake[];
+};
 
 export type UserStake = {
-  timestamp: BigNumber
-  amount: BigNumber
-}
+  timestamp: BigNumber;
+  amount: BigNumber;
+};

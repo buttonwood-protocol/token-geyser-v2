@@ -1,12 +1,12 @@
 // assembly script imports
-import { Address, BigInt } from '@graphprotocol/graph-ts'
+import { Address, BigInt } from '@graphprotocol/graph-ts';
 
 // template creation imports
-import { InstanceAdded } from '../generated/GeyserRegistry/InstanceRegistry'
-import { GeyserTemplate, PowerSwitchTemplate } from '../generated/templates'
+import { InstanceAdded } from '../generated/GeyserRegistry/InstanceRegistry';
+import { GeyserTemplate, PowerSwitchTemplate } from '../generated/templates';
 
 // debug
-import { log } from '@graphprotocol/graph-ts'
+import { log } from '@graphprotocol/graph-ts';
 
 // handler imports
 import {
@@ -17,17 +17,17 @@ import {
   RewardClaimed,
   Staked,
   Unstaked,
-} from '../generated/templates/GeyserTemplate/GeyserContract'
-import { EmergencyShutdown, PowerOff, PowerOn } from '../generated/templates/PowerSwitchTemplate/PowerSwitchContract'
-import { ERC20 } from '../generated/templates/GeyserTemplate/ERC20'
+} from '../generated/templates/GeyserTemplate/GeyserContract';
+import { EmergencyShutdown, PowerOff, PowerOn } from '../generated/templates/PowerSwitchTemplate/PowerSwitchContract';
+import { ERC20 } from '../generated/templates/GeyserTemplate/ERC20';
 
 // entity imports
-import { ClaimedReward, Geyser, Lock, RewardPoolBalance, RewardSchedule, PowerSwitch } from '../generated/schema'
+import { ClaimedReward, Geyser, Lock, RewardPoolBalance, RewardSchedule, PowerSwitch } from '../generated/schema';
 
 // template instantiation
 export function handleNewGeyser(event: InstanceAdded): void {
-  log.info('New geyser added: {}', [event.params.instance.toString()])
-  GeyserTemplate.create(event.params.instance)
+  log.info('New geyser added: {}', [event.params.instance.toString()]);
+  GeyserTemplate.create(event.params.instance);
 }
 
 // event handlers
@@ -37,164 +37,164 @@ function updateRewardPoolBalance(
   tokenAddress: Address,
   timestamp: BigInt,
 ): void {
-  let entity = new RewardPoolBalance(poolAddress.toHex() + '-' + tokenAddress.toHex())
+  let entity = new RewardPoolBalance(poolAddress.toHex() + '-' + tokenAddress.toHex());
 
-  entity.geyser = geyserAddress.toHex()
-  entity.pool = poolAddress
-  entity.token = tokenAddress
-  entity.balance = ERC20.bind(tokenAddress).balanceOf(poolAddress)
-  entity.lastUpdate = timestamp
+  entity.geyser = geyserAddress.toHex();
+  entity.pool = poolAddress;
+  entity.token = tokenAddress;
+  entity.balance = ERC20.bind(tokenAddress).balanceOf(poolAddress);
+  entity.lastUpdate = timestamp;
 
-  entity.save()
+  entity.save();
 }
 
 function _updateGeyser(geyser: Geyser, geyserContract: GeyserContract, timestamp: BigInt): void {
-  let geyserData = geyserContract.getGeyserData()
-  let geyserAddress = Address.fromHexString(geyser.id) as Address
+  let geyserData = geyserContract.getGeyserData();
+  let geyserAddress = Address.fromHexString(geyser.id) as Address;
 
-  geyser.totalStake = geyserData.totalStake
-  geyser.totalStakeUnits = geyserContract.getCurrentTotalStakeUnits()
-  geyser.unlockedReward = geyserContract.getCurrentUnlockedRewards()
-  geyser.rewardBalance = ERC20.bind(geyserData.rewardToken).balanceOf(geyserData.rewardPool)
-  geyser.lastUpdate = timestamp
+  geyser.totalStake = geyserData.totalStake;
+  geyser.totalStakeUnits = geyserContract.getCurrentTotalStakeUnits();
+  geyser.unlockedReward = geyserContract.getCurrentUnlockedRewards();
+  geyser.rewardBalance = ERC20.bind(geyserData.rewardToken).balanceOf(geyserData.rewardPool);
+  geyser.lastUpdate = timestamp;
 
-  let bonusTokens = geyser.bonusTokens
+  let bonusTokens = geyser.bonusTokens;
   for (let index = 0; index < bonusTokens.length; index++) {
-    let tokenAddress = bonusTokens.pop() as Address
-    updateRewardPoolBalance(geyserData.rewardPool, geyserAddress, tokenAddress, timestamp)
+    let tokenAddress = bonusTokens.pop() as Address;
+    updateRewardPoolBalance(geyserData.rewardPool, geyserAddress, tokenAddress, timestamp);
   }
 
-  geyser.save()
+  geyser.save();
 }
 
 function updateGeyser(geyserAddress: Address, timestamp: BigInt): void {
-  let geyser = Geyser.load(geyserAddress.toHex()) as Geyser
-  let geyserContract = GeyserContract.bind(geyserAddress)
-  _updateGeyser(geyser, geyserContract, timestamp)
+  let geyser = Geyser.load(geyserAddress.toHex()) as Geyser;
+  let geyserContract = GeyserContract.bind(geyserAddress);
+  _updateGeyser(geyser, geyserContract, timestamp);
 }
 
 export function handleGeyserCreated(event: GeyserCreated): void {
-  let entity = new Geyser(event.address.toHex())
-  let geyserContract = GeyserContract.bind(event.address)
+  let entity = new Geyser(event.address.toHex());
+  let geyserContract = GeyserContract.bind(event.address);
 
-  PowerSwitchTemplate.create(event.params.powerSwitch)
-  let powerSwitch = new PowerSwitch(event.params.powerSwitch.toHex())
-  powerSwitch.status = 'Online'
-  powerSwitch.save()
+  PowerSwitchTemplate.create(event.params.powerSwitch);
+  let powerSwitch = new PowerSwitch(event.params.powerSwitch.toHex());
+  powerSwitch.status = 'Online';
+  powerSwitch.save();
 
-  let geyserData = geyserContract.getGeyserData()
+  let geyserData = geyserContract.getGeyserData();
 
-  entity.powerSwitch = event.params.powerSwitch.toHex()
-  entity.rewardPool = event.params.rewardPool
-  entity.stakingToken = geyserData.stakingToken
-  entity.rewardToken = geyserData.rewardToken
-  entity.scalingFloor = geyserData.rewardScaling.floor
-  entity.scalingCeiling = geyserData.rewardScaling.ceiling
-  entity.scalingTime = geyserData.rewardScaling.time
-  entity.bonusTokens = []
+  entity.powerSwitch = event.params.powerSwitch.toHex();
+  entity.rewardPool = event.params.rewardPool;
+  entity.stakingToken = geyserData.stakingToken;
+  entity.rewardToken = geyserData.rewardToken;
+  entity.scalingFloor = geyserData.rewardScaling.floor;
+  entity.scalingCeiling = geyserData.rewardScaling.ceiling;
+  entity.scalingTime = geyserData.rewardScaling.time;
+  entity.bonusTokens = [];
 
-  _updateGeyser(entity, geyserContract, event.block.timestamp)
+  _updateGeyser(entity, geyserContract, event.block.timestamp);
 }
 
 export function handleGeyserFunded(event: GeyserFunded): void {
-  let geyser = GeyserContract.bind(event.address)
-  let geyserData = geyser.getGeyserData()
+  let geyser = GeyserContract.bind(event.address);
+  let geyserData = geyser.getGeyserData();
 
   let entity = new RewardSchedule(
     event.address.toHex() + '-' + BigInt.fromI32(geyserData.rewardSchedules.length).toString(),
-  )
+  );
 
-  let rewardScheduleData = geyserData.rewardSchedules.pop()
+  let rewardScheduleData = geyserData.rewardSchedules.pop();
 
-  entity.geyser = event.address.toHex()
-  entity.rewardAmount = event.params.amount
-  entity.duration = rewardScheduleData.duration
-  entity.start = rewardScheduleData.start
-  entity.shares = rewardScheduleData.shares
+  entity.geyser = event.address.toHex();
+  entity.rewardAmount = event.params.amount;
+  entity.duration = rewardScheduleData.duration;
+  entity.start = rewardScheduleData.start;
+  entity.shares = rewardScheduleData.shares;
 
-  updateGeyser(event.address, event.block.timestamp)
+  updateGeyser(event.address, event.block.timestamp);
 
-  entity.save()
+  entity.save();
 }
 
 export function handleBonusTokenRegistered(event: BonusTokenRegistered): void {
-  let entity = Geyser.load(event.address.toHex()) as Geyser
+  let entity = Geyser.load(event.address.toHex()) as Geyser;
 
-  let bonusTokens = entity.bonusTokens
-  bonusTokens.push(event.params.token)
-  entity.bonusTokens = bonusTokens
+  let bonusTokens = entity.bonusTokens;
+  bonusTokens.push(event.params.token);
+  entity.bonusTokens = bonusTokens;
 
-  let geyserContract = GeyserContract.bind(event.address)
-  _updateGeyser(entity, geyserContract, event.block.timestamp)
+  let geyserContract = GeyserContract.bind(event.address);
+  _updateGeyser(entity, geyserContract, event.block.timestamp);
 }
 
 function updateVaultStake(geyserAddress: Address, vaultAddress: Address, timestamp: BigInt): void {
-  let id = geyserAddress.toHex() + '-' + vaultAddress.toHex()
+  let id = geyserAddress.toHex() + '-' + vaultAddress.toHex();
 
-  let geyserContract = GeyserContract.bind(geyserAddress)
+  let geyserContract = GeyserContract.bind(geyserAddress);
 
   let lock = new Lock(
     vaultAddress.toHex() + '-' + geyserAddress.toHex() + '-' + geyserContract.getGeyserData().stakingToken.toHex(),
-  )
-  lock.geyser = geyserAddress.toHex()
-  lock.vault = vaultAddress.toHex()
-  lock.stakeUnits = geyserContract.getCurrentVaultStakeUnits(vaultAddress)
-  lock.amount = geyserContract.getVaultData(vaultAddress).totalStake
-  lock.lastUpdate = timestamp
-  lock.token = geyserContract.getGeyserData().stakingToken
+  );
+  lock.geyser = geyserAddress.toHex();
+  lock.vault = vaultAddress.toHex();
+  lock.stakeUnits = geyserContract.getCurrentVaultStakeUnits(vaultAddress);
+  lock.amount = geyserContract.getVaultData(vaultAddress).totalStake;
+  lock.lastUpdate = timestamp;
+  lock.token = geyserContract.getGeyserData().stakingToken;
 
-  updateGeyser(geyserAddress, timestamp)
+  updateGeyser(geyserAddress, timestamp);
 
-  lock.save()
+  lock.save();
 }
 
 export function handleStaked(event: Staked): void {
-  updateVaultStake(event.address, event.params.vault, event.block.timestamp)
+  updateVaultStake(event.address, event.params.vault, event.block.timestamp);
 }
 
 export function handleUnstaked(event: Unstaked): void {
-  updateVaultStake(event.address, event.params.vault, event.block.timestamp)
+  updateVaultStake(event.address, event.params.vault, event.block.timestamp);
 }
 
 export function handleRewardClaimed(event: RewardClaimed): void {
-  let id = event.params.vault.toHex() + '-' + event.params.token.toHex()
+  let id = event.params.vault.toHex() + '-' + event.params.token.toHex();
 
-  let entity = ClaimedReward.load(id)
+  let entity = ClaimedReward.load(id);
   if (entity == null) {
-    entity = new ClaimedReward(id)
-    entity.amount = BigInt.fromI32(0)
+    entity = new ClaimedReward(id);
+    entity.amount = BigInt.fromI32(0);
   }
 
-  entity.vault = event.params.vault.toHex()
-  entity.token = event.params.token
-  entity.amount = entity.amount.plus(event.params.amount)
-  entity.lastUpdate = event.block.timestamp
+  entity.vault = event.params.vault.toHex();
+  entity.token = event.params.token;
+  entity.amount = entity.amount.plus(event.params.amount);
+  entity.lastUpdate = event.block.timestamp;
 
-  updateGeyser(event.address, event.block.timestamp)
+  updateGeyser(event.address, event.block.timestamp);
 
-  entity.save()
+  entity.save();
 }
 
 export function handlePowerOn(event: PowerOn): void {
-  let entity = new PowerSwitch(event.address.toHex())
+  let entity = new PowerSwitch(event.address.toHex());
 
-  entity.status = 'Online'
+  entity.status = 'Online';
 
-  entity.save()
+  entity.save();
 }
 
 export function handlePowerOff(event: PowerOff): void {
-  let entity = new PowerSwitch(event.address.toHex())
+  let entity = new PowerSwitch(event.address.toHex());
 
-  entity.status = 'Offline'
+  entity.status = 'Offline';
 
-  entity.save()
+  entity.save();
 }
 
 export function handleEmergencyShutdown(event: EmergencyShutdown): void {
-  let entity = new PowerSwitch(event.address.toHex())
+  let entity = new PowerSwitch(event.address.toHex());
 
-  entity.status = 'Shutdown'
+  entity.status = 'Shutdown';
 
-  entity.save()
+  entity.save();
 }

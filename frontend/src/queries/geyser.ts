@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { gql } from '@apollo/client';
 
 export const GET_GEYSERS = gql`
   query getGeysers($ids: [ID!]!) {
@@ -33,4 +33,4 @@ export const GET_GEYSERS = gql`
       }
     }
   }
-`
+`;

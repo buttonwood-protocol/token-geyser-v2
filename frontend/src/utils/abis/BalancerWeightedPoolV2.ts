@@ -364,4 +364,4 @@ export const BALANCER_WEIGHTED_POOL_V2_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-]
+];

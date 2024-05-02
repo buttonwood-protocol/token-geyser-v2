@@ -1,6 +1,6 @@
-import CGApi from 'coingecko-api'
-import { HOUR_IN_MS } from '../constants'
-import * as ls from './cache'
+import CGApi from 'coingecko-api';
+import { HOUR_IN_MS } from '../constants';
+import * as ls from './cache';
 
 const DEFAULT_PRICES: Record<string, number> = {
   AMPL: 1.0,
@@ -22,7 +22,7 @@ const DEFAULT_PRICES: Record<string, number> = {
   'yDAI+yUSDC+yUSDT+yTUSD': 1.1,
   SPOT: 1.14,
   FORTH: 2.5,
-}
+};
 
 const SYMBOL_TO_QUERY: Record<string, string> = {
   WBTC: 'wrapped-bitcoin',
@@ -44,37 +44,37 @@ const SYMBOL_TO_QUERY: Record<string, string> = {
   'yDAI+yUSDC+yUSDT+yTUSD': 'curve-fi-ydai-yusdc-yusdt-ytusd',
   SPOT: 'spot',
   FORTH: 'ampleforth-governance-token',
-}
+};
 
 export const getCurrentPrice = async (symbol: string) => {
-  const cacheKey = `geyser|${symbol}|spot`
-  const TTL = HOUR_IN_MS
+  const cacheKey = `geyser|${symbol}|spot`;
+  const TTL = HOUR_IN_MS;
 
   try {
-    const query = SYMBOL_TO_QUERY[symbol]
+    const query = SYMBOL_TO_QUERY[symbol];
     if (!query) {
-      throw new Error(`Can't fetch price for ${symbol}`)
+      throw new Error(`Can't fetch price for ${symbol}`);
     }
 
     return await ls.computeAndCache<number>(
       async () => {
-        const client = new CGApi()
-        const reqTimeoutSec = 10
+        const client = new CGApi();
+        const reqTimeoutSec = 10;
         const p: any = await Promise.race([
           client.simple.price({
             ids: [query],
             vs_currencies: ['usd'],
           }),
           new Promise((_, reject) => setTimeout(() => reject(new Error('request timeout')), reqTimeoutSec * 1000)),
-        ])
-        const price = p.data[query].usd
-        return price as number
+        ]);
+        const price = p.data[query].usd;
+        return price as number;
       },
       cacheKey,
       TTL,
-    )
+    );
   } catch (e) {
-    console.error(e)
-    return DEFAULT_PRICES[symbol] || 0
+    console.error(e);
+    return DEFAULT_PRICES[symbol] || 0;
   }
-}
+};

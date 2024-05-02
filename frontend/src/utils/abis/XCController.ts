@@ -409,4 +409,4 @@ export const XC_CONTROLLER_ABI = [
     stateMutability: 'view',
     type: 'function',
   },
-]
+];

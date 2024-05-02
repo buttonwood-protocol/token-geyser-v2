@@ -294,4 +294,4 @@ export const WRAPPED_ERC20_ABI = [
     stateMutability: 'view',
     type: 'function',
   },
-]
+];

@@ -388,4 +388,4 @@ export const UFRAGMENTS_POLICY_ABI = [
     stateMutability: 'view',
     type: 'function',
   },
-]
+];

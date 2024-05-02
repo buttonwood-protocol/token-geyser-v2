@@ -524,4 +524,4 @@ export const UFRAGMENTS_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-]
+];

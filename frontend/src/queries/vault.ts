@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { gql } from '@apollo/client';
 
 export const GET_USER_VAULTS = gql`
   query getUserVaults($id: ID!) {
@@ -22,4 +22,4 @@ export const GET_USER_VAULTS = gql`
       }
     }
   }
-`
+`;
